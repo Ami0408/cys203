@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompuFix CBE | Computer Troubleshooting Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d47;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === BACKGROUND MESH === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,212,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(124,58,237,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(16,185,129,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* === LANDING PAGE === */
+  #landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 50px;
+    padding: 8px 20px;
+    margin-bottom: 36px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .landing-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .landing-title .line1 { display: block; color: var(--text); }
+  .landing-title .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .landing-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text-dim);
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .stat-card .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  .btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--accent), #0099cc);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 18px 48px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 40px rgba(0,212,255,0.3);
+  }
+
+  .btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 50px rgba(0,212,255,0.5);
+  }
+
+  .btn-start svg { width: 20px; height: 20px; }
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    max-width: 800px;
+    margin-top: 60px;
+  }
+
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: left;
+  }
+
+  .info-card .ic-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .info-card .ic-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .info-card .ic-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* === EXAM PAGE === */
+  #exam { display: none; min-height: 100vh; }
+
+  .exam-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(10,14,26,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+
+  .exam-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  .exam-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .q-counter {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+
+  .q-counter span { color: var(--accent); }
+
+  .timer-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ef4444;
+  }
+
+  .btn-submit-header {
+    background: linear-gradient(135deg, var(--accent3), #059669);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-submit-header:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(16,185,129,0.4); }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    position: fixed;
+    top: 65px; left: 0; right: 0;
+    height: 3px;
+    background: var(--border);
+    z-index: 99;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+
+  /* Question page */
+  .question-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 120px;
+  }
+
+  .q-card {
+    width: 100%;
+    max-width: 760px;
+    animation: slideIn 0.35s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 24px;
+    letter-spacing: 0.05em;
+  }
+
+  .q-category-tag {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 50px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #a78bfa;
+    font-weight: 500;
+    margin-left: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+    margin-bottom: 36px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.15);
+  }
+
+  .option-btn:hover:not(:disabled)::before { opacity: 1; }
+
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.15);
+  }
+
+  .option-btn.correct-ans {
+    border-color: var(--correct);
+    background: rgba(16,185,129,0.1);
+    box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+  }
+
+  .option-btn.wrong-ans {
+    border-color: var(--wrong);
+    background: rgba(239,68,68,0.1);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+  }
+
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  .opt-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    transition: all 0.25s;
+  }
+
+  .option-btn.selected .opt-letter { background: var(--accent); color: #000; }
+  .option-btn.correct-ans .opt-letter { background: var(--correct); color: #fff; }
+  .option-btn.wrong-ans .opt-letter { background: var(--wrong); color: #fff; }
+
+  /* Nav buttons */
+  .exam-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(10,14,26,0.97);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 12px 24px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .nav-btn svg { width: 16px; height: 16px; }
+
+  /* Answered dots */
+  .dots-wrap {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 400px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .dot.answered { background: var(--accent); }
+  .dot.current { background: var(--accent2); transform: scale(1.5); }
+  .dot:hover { transform: scale(1.4); }
+
+  /* === RESULTS PAGE === */
+  #results { display: none; min-height: 100vh; padding: 80px 20px 40px; }
+
+  .results-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .score-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 160px; height: 160px;
+  }
+
+  .score-ring svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+  .score-ring .bg-circle { stroke: var(--border); }
+  .score-ring .prog-circle { stroke: url(#scoreGrad); transition: stroke-dashoffset 1.5s ease; }
+
+  .score-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .score-label-sm {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .result-sub { font-size: 16px; color: var(--text-dim); }
+
+  .result-stats {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .rs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 30px;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .rs-card .rs-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .rs-card .rs-lbl {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .rs-card.correct .rs-num { color: var(--correct); }
+  .rs-card.wrong .rs-num { color: var(--wrong); }
+  .rs-card.skipped .rs-num { color: var(--warning); }
+  .rs-card.total .rs-num { color: var(--accent); }
+
+  /* Review section */
+  .review-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    max-width: 800px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .review-title span {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--wrong);
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 14px;
+  }
+
+  .review-cards { max-width: 800px; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+
+  .review-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    border-left: 4px solid var(--wrong);
+  }
+
+  .review-card .rc-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .rc-qnum {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .rc-cat {
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 50px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: #a78bfa;
+  }
+
+  .rc-q {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    line-height: 1.45;
+  }
+
+  .rc-answers { display: flex; flex-direction: column; gap: 8px; }
+
+  .rc-ans {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+  }
+
+  .rc-ans.your-wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+  .rc-ans.correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+  .rc-ans.skipped-label { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); color: #fcd34d; }
+
+  .rc-ans-icon { font-size: 16px; }
+
+  .rc-expl {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(0,212,255,0.04);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-left: 3px solid rgba(0,212,255,0.3);
+  }
+
+  .btn-retake {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent2), #5b21b6);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 40px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 48px;
+    box-shadow: 0 0 30px rgba(124,58,237,0.3);
+  }
+
+  .btn-retake:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(124,58,237,0.5); }
+
+  .results-actions { text-align: center; margin-bottom: 60px; }
+
+  /* Answered/unanswered indicator */
+  .unanswered-warning {
+    display: none;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    font-size: 14px;
+    color: var(--warning);
+    text-align: center;
+    margin: 0 auto 16px;
+    max-width: 400px;
+  }
+
+  /* Badge for result */
+  .badge-wrap { display: flex; justify-content: center; margin-bottom: 24px; }
+  .result-badge {
+    font-size: 60px;
+    animation: popIn 0.5s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* Explanation shown after selection */
+  .explanation-box {
+    display: none;
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: rgba(0,212,255,0.04);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.65;
+    border-left: 3px solid rgba(0,212,255,0.35);
+  }
+
+  .answered-note {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: -20px;
+    margin-bottom: 20px;
+  }
+
+  /* Confirm modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+  }
+
+  .modal h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .modal p { color: var(--text-dim); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
+
+  .modal-btns { display: flex; gap: 12px; justify-content: center; }
+
+  .btn-cancel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { border-color: var(--text-dim); }
+
+  .btn-confirm {
+    background: linear-gradient(135deg, var(--accent3), #059669);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(16,185,129,0.4); }
+
+  @media (max-width: 480px) {
+    .exam-meta { gap: 10px; }
+    .exam-header { padding: 12px 16px; }
+    .exam-nav { padding: 12px 16px; }
+    .dots-wrap { max-width: 200px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="landing">
+  <div class="logo-badge"><div class="logo-dot"></div> Computer-Based Examination</div>
+
+  <h1 class="landing-title">
+    <span class="line1">CompuFix</span>
+    <span class="line2">CBE Assessment</span>
+  </h1>
+
+  <p class="landing-sub">
+    Test your knowledge of computer troubleshooting — hardware faults, software errors, diagnostic techniques, and best practices.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat-card"><span class="num">200+</span><span class="label">Questions</span></div>
+    <div class="stat-card"><span class="num">60</span><span class="label">Per Session</span></div>
+    <div class="stat-card"><span class="num">75<small style="font-size:18px">min</small></span><span class="label">Time Limit</span></div>
+    <div class="stat-card"><span class="num">6</span><span class="label">Topics</span></div>
+  </div>
+
+  <button class="btn-start" onclick="startExam()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Start Examination
+  </button>
+
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="ic-icon" style="background:rgba(0,212,255,0.1)">🔧</div>
+      <div class="ic-title">Hardware Faults</div>
+      <div class="ic-desc">Power issues, display problems, overheating, peripheral failures and more.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon" style="background:rgba(124,58,237,0.1)">💾</div>
+      <div class="ic-title">Software Errors</div>
+      <div class="ic-desc">OS errors, crashes, slow performance, malware, and driver conflicts.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon" style="background:rgba(16,185,129,0.1)">🌐</div>
+      <div class="ic-title">Network & Connectivity</div>
+      <div class="ic-desc">Internet issues, router problems, wireless signal diagnostics.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon" style="background:rgba(245,158,11,0.1)">🛠️</div>
+      <div class="ic-title">Diagnostic Tools</div>
+      <div class="ic-desc">Task Manager, antivirus, Disk Cleanup, multimeters, and more.</div>
+    </div>
+  </div>
+</div>
+
+<div id="exam">
+  <div class="exam-header">
+    <div class="exam-logo">CompuFix</div>
+    <div class="exam-meta">
+      <div class="q-counter">Q <span id="qCurrent">1</span> of <span id="qTotal">60</span></div>
+      <div class="timer-badge">⏱ <span id="timerDisplay">75:00</span></div>
+      <button class="btn-submit-header" onclick="openSubmitModal()">Submit</button>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+
+  <div class="question-page">
+    <div class="q-card" id="qCard">
+      <div>
+        <div class="q-number-tag" id="qNumTag"></div>
+        <div class="q-text" id="qText"></div>
+        <div class="options-grid" id="optionsGrid"></div>
+        <div class="explanation-box" id="explBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-nav">
+    <button class="nav-btn" id="btnPrev" onclick="navigate(-1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Previous
+    </button>
+    <div class="dots-wrap" id="dotsWrap"></div>
+    <button class="nav-btn" id="btnNext" onclick="navigate(1)">
+      Next
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <h3>Submit Examination?</h3>
+    <p id="submitModalMsg">You have answered <strong id="answeredCount">0</strong> of 60 questions. Unanswered questions will be marked incorrect. Are you sure you want to submit?</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeSubmitModal()">Go Back</button>
+      <button class="btn-confirm" onclick="submitExam()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<div id="results">
+  <div class="results-header">
+    <div class="badge-wrap"><div class="result-badge" id="resultEmoji">🎉</div></div>
+    <h2 class="result-title" id="resultTitle">Exam Complete!</h2>
+    <p class="result-sub" id="resultSub"></p>
+  </div>
+
+  <div class="score-ring-wrap">
+    <div class="score-ring">
+      <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+        <circle class="bg-circle" cx="80" cy="80" r="68"/>
+        <circle class="prog-circle" id="scoreCircle" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
+      </svg>
+      <div class="score-text">
+        <div class="score-pct" id="scorePct">0%</div>
+        <div class="score-label-sm">Score</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-stats">
+    <div class="rs-card correct"><span class="rs-num" id="rsCorrect">0</span><span class="rs-lbl">Correct</span></div>
+    <div class="rs-card wrong"><span class="rs-num" id="rsWrong">0</span><span class="rs-lbl">Wrong</span></div>
+    <div class="rs-card skipped"><span class="rs-num" id="rsSkipped">0</span><span class="rs-lbl">Skipped</span></div>
+    <div class="rs-card total"><span class="rs-num">60</span><span class="rs-lbl">Total</span></div>
+  </div>
+
+  <div class="results-actions">
+    <button class="btn-retake" onclick="retakeExam()">
+      🔄 Retake Examination
+    </button>
+  </div>
+
+  <div id="reviewSection">
+    <div class="review-title">Missed Questions <span id="wrongCountBadge">0</span></div>
+    <div class="review-cards" id="reviewCards"></div>
+  </div>
+
+  <div style="height:60px"></div>
+</div>
+
+</div><script>
+// =====================
+// QUESTION BANK (200+)
+// =====================
+const ALL_QUESTIONS = [
+  // === CATEGORY: HARDWARE - POWER ===
+  { q: "A computer does not turn on at all. What is the FIRST thing you should check?", opts: ["Replace the CPU", "Check the power cable connection", "Reinstall the operating system", "Update the BIOS"], ans: 1, cat: "Hardware – Power", expl: "Always start with the simplest possible cause. A disconnected or loose power cable is one of the most common reasons a computer won't power on." },
+  { q: "A laptop does not power on even when the power button is pressed. The most likely first cause to check is:", opts: ["Faulty RAM module", "Discharged or faulty battery", "Corrupted operating system", "Damaged CPU"], ans: 1, cat: "Hardware – Power", expl: "Laptops rely on their battery. A completely discharged or faulty battery will prevent the laptop from turning on without AC power." },
+  { q: "You plug a computer into a power strip and it still doesn't turn on. What should you try next?", opts: ["Replace the motherboard", "Plug directly into a wall socket", "Re-install Windows", "Replace the hard drive"], ans: 1, cat: "Hardware – Power", expl: "Power strips can fail or be switched off. Plugging directly into a wall socket eliminates the power strip as a variable." },
+  { q: "Which hardware component is responsible for supplying regulated power to all PC components?", opts: ["Motherboard", "Power Supply Unit (PSU)", "CPU", "RAM"], ans: 1, cat: "Hardware – Power", expl: "The PSU converts AC power from the wall into the DC voltages required by motherboard, drives, and peripherals." },
+  { q: "A technician uses a multimeter during troubleshooting. What does the multimeter primarily measure?", opts: ["Network packet loss", "Electrical voltage and current", "Hard disk read speed", "GPU temperature"], ans: 1, cat: "Hardware – Power", expl: "A multimeter measures electrical quantities such as voltage, current, and resistance, which are essential for testing power supply output." },
+  { q: "After replacing the power supply, a desktop computer still does not turn on. What should be checked next?", opts: ["Network settings", "Motherboard and connections", "Mouse driver", "Monitor brightness"], ans: 1, cat: "Hardware – Power", expl: "If a new PSU doesn't fix the issue, the motherboard or its connections may be faulty." },
+  { q: "A computer powers off suddenly and repeatedly. Overheating is suspected. Which tool can confirm this?", opts: ["Disk Cleanup", "Temperature monitoring software", "Task Manager", "Disk Defragmenter"], ans: 1, cat: "Hardware – Power", expl: "Temperature monitoring utilities (e.g., HWMonitor, Core Temp) display CPU and GPU temperatures in real time." },
+
+  // === CATEGORY: HARDWARE – DISPLAY ===
+  { q: "A monitor shows 'No Signal' after the computer boots. What is the BEST first step?", opts: ["Reinstall Windows", "Check the display cable connection", "Replace the monitor", "Run Disk Cleanup"], ans: 1, cat: "Hardware – Display", expl: "A loose or disconnected display cable is the most common cause of a 'No Signal' error." },
+  { q: "A desktop shows nothing on the monitor but the PC appears to be running (fans spinning). What is a possible cause?", opts: ["Virus infection", "Loose or faulty video cable", "Low RAM", "Firewall blocking display"], ans: 1, cat: "Hardware – Display", expl: "If the PC is running but no image appears, the video cable or graphics card connection should be inspected first." },
+  { q: "A monitor status light is ON but the screen remains blank. What does this likely indicate?", opts: ["The monitor is broken", "The monitor is working but not receiving a video signal", "The CPU is dead", "The hard disk failed"], ans: 1, cat: "Hardware – Display", expl: "The status light indicates the monitor has power. The issue is in the video signal path — cable or graphics card." },
+  { q: "Some desktops have multiple video output ports. If the screen shows no image, you should:", opts: ["Buy a new computer", "Try each available video port", "Run Windows Update", "Replace the RAM"], ans: 1, cat: "Hardware – Display", expl: "Plugging the monitor into a different port (e.g., HDMI vs DisplayPort vs VGA) can resolve no-display issues caused by port-specific failures." },
+  { q: "A user adjusted brightness on their monitor too low and now sees nothing. What is the solution?", opts: ["Re-install the OS", "Adjust brightness/contrast via the monitor's buttons", "Replace the GPU", "Run antivirus"], ans: 1, cat: "Hardware – Display", expl: "The monitor's onboard menu buttons allow brightness and contrast adjustments independent of the computer." },
+  { q: "A screen flickers intermittently. The MOST likely cause is:", opts: ["Virus infection", "Outdated or corrupted display driver", "Slow internet", "Low hard disk space"], ans: 1, cat: "Hardware – Display", expl: "Display flickering is commonly caused by outdated, corrupted, or incompatible graphics drivers. Updating the driver often resolves this." },
+  { q: "Which of the following is a sign of a failing graphics card?", opts: ["Slow internet speed", "Artifacts or strange colors appearing on screen", "Keyboard not responding", "Computer making noise"], ans: 1, cat: "Hardware – Display", expl: "Graphical artifacts—unusual patterns, random pixels, or color distortions—are classic symptoms of a failing GPU." },
+
+  // === CATEGORY: HARDWARE – PERIPHERALS ===
+  { q: "A USB keyboard stops working. The FIRST troubleshooting step is:", opts: ["Replace the keyboard", "Reconnect the keyboard or try a different USB port", "Reinstall Windows", "Replace the CPU"], ans: 1, cat: "Hardware – Peripherals", expl: "A loose connection or faulty USB port is the most common cause. Trying another port is quick and non-destructive." },
+  { q: "A mouse cursor does not move at all. After reconnecting it still fails. What should you try?", opts: ["Replace the monitor", "Test the mouse on another computer", "Run Disk Defragmenter", "Restart the network"], ans: 1, cat: "Hardware – Peripherals", expl: "Testing the mouse on another computer determines whether the problem is with the mouse itself or the original computer." },
+  { q: "A wireless mouse stops responding. What is the FIRST thing to check?", opts: ["Mouse driver update", "Battery level in the mouse", "Network adapter", "GPU drivers"], ans: 1, cat: "Hardware – Peripherals", expl: "Wireless input devices run on batteries. Dead or low batteries are the most common cause of wireless mouse failure." },
+  { q: "A printer fails to print. After checking the ink and paper, what should be checked next?", opts: ["Update Windows", "Check the USB/network connection between printer and computer", "Replace the hard drive", "Increase RAM"], ans: 1, cat: "Hardware – Peripherals", expl: "Communication between the printer and computer (via USB or network) is essential. A disconnected cable is a common simple fix." },
+  { q: "A technician hears a clicking or grinding noise from a computer when powered on. What should they do FIRST?", opts: ["Ignore it and continue working", "Power off immediately — possible hard disk failure", "Increase the fan speed", "Run antivirus"], ans: 1, cat: "Hardware – Peripherals", expl: "Clicking or grinding sounds from inside the PC often indicate mechanical hard drive failure. Powering off immediately can prevent further data loss." },
+  { q: "Which of the following tools is used to physically open a PC case for hardware inspection?", opts: ["Multimeter", "Screwdriver set", "USB boot drive", "Task Manager"], ans: 1, cat: "Hardware – Peripherals", expl: "Screwdrivers (typically Phillips-head) are needed to remove case screws and access internal components." },
+  { q: "Before touching internal components of a PC, a technician should:", opts: ["Update all drivers", "Ground themselves to prevent static electricity discharge", "Run antivirus first", "Open Task Manager"], ans: 1, cat: "Hardware – Peripherals", expl: "Electrostatic discharge (ESD) can damage sensitive components. Grounding prevents this." },
+
+  // === CATEGORY: HARDWARE – OVERHEATING ===
+  { q: "A computer shuts down suddenly after running for 10 minutes. The MOST likely cause is:", opts: ["Virus", "Overheating", "Corrupted OS", "Bad RAM"], ans: 1, cat: "Hardware – Overheating", expl: "Computers have thermal protection that triggers shutdown when temperature thresholds are exceeded." },
+  { q: "What is the PRIMARY cause of overheating in a desktop PC?", opts: ["Too many browser tabs", "Dust buildup blocking airflow and fans", "Outdated Windows version", "Small hard drive"], ans: 1, cat: "Hardware – Overheating", expl: "Accumulated dust blocks vents and covers cooling fans and heatsinks, drastically reducing cooling efficiency." },
+  { q: "Which of the following helps prevent laptop overheating?", opts: ["Running more programs simultaneously", "Using a laptop cooling pad", "Removing antivirus software", "Increasing screen brightness"], ans: 1, cat: "Hardware – Overheating", expl: "Cooling pads provide additional airflow under a laptop, reducing operating temperature." },
+  { q: "A faulty or damaged component MOST likely to cause overheating is:", opts: ["Cooling fan", "Power cable", "Keyboard", "Monitor"], ans: 0, cat: "Hardware – Overheating", expl: "The cooling fan is responsible for moving heat away from the CPU and GPU. A faulty fan leads directly to overheating." },
+  { q: "What is the purpose of thermal paste in a computer?", opts: ["To protect the hard drive from dust", "To improve heat transfer between CPU and heatsink", "To speed up RAM", "To stabilize network connections"], ans: 1, cat: "Hardware – Overheating", expl: "Thermal paste fills microscopic gaps between the CPU and heatsink surface, dramatically improving heat conduction." },
+  { q: "Proper ventilation in a PC means:", opts: ["Covering all vents to protect components", "Ensuring airflow can move freely through the case", "Running the computer in a closed cabinet", "Removing the case cover permanently"], ans: 1, cat: "Hardware – Overheating", expl: "Adequate airflow through and out of the case prevents heat buildup. Blocked vents cause overheating." },
+  { q: "Which hardware tool can you use to blow dust out of a PC?", opts: ["Multimeter", "Compressed air blower", "Screwdriver", "USB stick"], ans: 1, cat: "Hardware – Overheating", expl: "Compressed air (or an electric blower) safely removes dust from fans, heatsinks, and vents without damaging components." },
+
+  // === CATEGORY: SOFTWARE – SLOW PERFORMANCE ===
+  { q: "A computer is running very slowly. The FIRST simple action to take is:", opts: ["Buy more RAM", "Restart the computer", "Reinstall Windows", "Replace the hard drive"], ans: 1, cat: "Software – Performance", expl: "Restarting clears memory, closes background processes, and often restores normal speed quickly." },
+  { q: "Which of the following is the MOST common software cause of a slow computer?", opts: ["Too many USB devices plugged in", "Too many programs running simultaneously", "Large monitor resolution", "Wireless mouse usage"], ans: 1, cat: "Software – Performance", expl: "Each running program consumes CPU and RAM. Too many concurrent processes degrade performance significantly." },
+  { q: "A user notices their computer slows down with 'unknown' background processes. What tool should they use?", opts: ["Disk Cleanup", "Task Manager", "Paint", "Calculator"], ans: 1, cat: "Software – Performance", expl: "Task Manager shows all running processes, their CPU and memory usage, and allows the user to end unwanted ones." },
+  { q: "Viruses and malware can slow down a computer because:", opts: ["They reduce screen brightness", "They consume system resources running in the background", "They increase the screen resolution", "They delete drivers"], ans: 1, cat: "Software – Performance", expl: "Malware often runs hidden background processes that steal CPU, RAM, and network resources, slowing the system." },
+  { q: "Disk Cleanup is a Windows tool that:", opts: ["Repairs bad sectors on a hard drive", "Removes temporary and unnecessary files to free space", "Updates device drivers", "Tests network connectivity"], ans: 1, cat: "Software – Performance", expl: "Disk Cleanup identifies and deletes temporary files, cached data, and other unnecessary files to reclaim disk space." },
+  { q: "Disk Defragmenter improves performance by:", opts: ["Scanning for viruses", "Consolidating fragmented files on the hard disk", "Updating Windows", "Compressing videos"], ans: 1, cat: "Software – Performance", expl: "Fragmentation scatters file data across the disk. Defragmenting consolidates it so the drive can read files faster." },
+  { q: "Which of the following would MOST directly speed up a sluggish computer?", opts: ["Increasing screen brightness", "Closing unnecessary running programs", "Adding a second monitor", "Changing the desktop wallpaper"], ans: 1, cat: "Software – Performance", expl: "Closing unnecessary programs frees CPU and RAM, directly improving system responsiveness." },
+  { q: "A user has not restarted their computer in two weeks. What is a recommended action?", opts: ["Buy a new computer", "Restart the computer to free up memory", "Replace the hard drive", "Reinstall Windows"], ans: 1, cat: "Software – Performance", expl: "Regular restarts clear RAM, apply updates, and free up resources accumulated over extended use sessions." },
+  { q: "Low available hard drive space can cause a computer to slow down because:", opts: ["It reduces screen resolution", "Windows uses hard disk space as virtual memory", "It corrupts the GPU driver", "It disconnects the internet"], ans: 1, cat: "Software – Performance", expl: "Windows uses a page file on the hard drive as virtual RAM. When disk space runs low, this mechanism fails, causing slowdowns." },
+  { q: "Uninstalling programs you no longer use will:", opts: ["Delete your personal files", "Free up hard disk space and improve performance", "Remove your operating system", "Break your network connection"], ans: 1, cat: "Software – Performance", expl: "Unused programs take up disk space and may run background services. Removing them reclaims resources." },
+
+  // === CATEGORY: SOFTWARE – CRASHES & ERRORS ===
+  { q: "A Windows computer displays a 'Blue Screen of Death' (BSOD). This typically indicates:", opts: ["Low battery", "Critical system error — often hardware or driver related", "Monitor failure", "Slow internet"], ans: 1, cat: "Software – Errors", expl: "BSOD (Stop Error) occurs when Windows encounters a critical error it cannot recover from, often due to driver or hardware issues." },
+  { q: "When Windows displays a blue screen and automatically restarts, what should you choose in the startup menu?", opts: ["Format and reinstall Windows", "'Start Windows Normally' first", "Enable Airplane Mode", "Run Disk Defragmenter"], ans: 1, cat: "Software – Errors", expl: "Starting Windows normally after a BSOD often resolves one-off glitches without further intervention." },
+  { q: "A software application becomes unresponsive ('frozen'). On Windows, the quickest way to close it is:", opts: ["Turn off the monitor", "Use Ctrl+Alt+Delete to open Task Manager and End Task", "Restart the router", "Increase screen brightness"], ans: 1, cat: "Software – Errors", expl: "Task Manager allows you to forcibly terminate unresponsive applications without needing to restart the entire system." },
+  { q: "Corrupted system files in Windows can be repaired using which built-in tool?", opts: ["Paint", "sfc /scannow (System File Checker)", "Notepad", "Calculator"], ans: 1, cat: "Software – Errors", expl: "The System File Checker (sfc /scannow) scans for and repairs corrupted Windows system files." },
+  { q: "System Restore in Windows allows you to:", opts: ["Recover deleted personal documents", "Revert system settings and files to a previous working state", "Install new hardware drivers", "Defragment the hard disk"], ans: 1, cat: "Software – Errors", expl: "System Restore rolls the operating system back to a previous restore point, undoing software changes without affecting personal files." },
+  { q: "An application crashes repeatedly. After updating it still crashes. The NEXT step is:", opts: ["Buy a new PC", "Reinstall the application", "Replace the monitor", "Upgrade the network"], ans: 1, cat: "Software – Errors", expl: "A clean reinstall resolves corrupted installation files that updates may not fix." },
+  { q: "An improper shutdown (e.g., power cut during use) can cause:", opts: ["Monitor fading", "Corrupted system or application files", "GPU damage", "Printer errors"], ans: 1, cat: "Software – Errors", expl: "Files being written at the time of sudden power loss may become corrupted, causing future errors or boot failures." },
+  { q: "Which Windows feature takes 'snapshots' of the system over time for recovery purposes?", opts: ["Disk Cleanup", "System Restore", "Task Manager", "Control Panel"], ans: 1, cat: "Software – Errors", expl: "System Restore regularly creates restore points — snapshots of system state — that can be used to recover from software problems." },
+  { q: "If Windows cannot start after a crash, pressing F8 during boot allows you to:", opts: ["Enter BIOS setup", "Access the Windows startup/recovery menu", "Format the hard drive", "Connect to Wi-Fi"], ans: 1, cat: "Software – Errors", expl: "F8 during boot opens the advanced startup options, including Safe Mode and Last Known Good Configuration." },
+  { q: "Safe Mode loads Windows with:", opts: ["All applications and full features", "Minimal drivers and services for diagnostic purposes", "Maximum performance settings", "Network-only access"], ans: 1, cat: "Software – Errors", expl: "Safe Mode loads only essential drivers and services, helping isolate whether third-party software causes the problem." },
+
+  // === CATEGORY: SOFTWARE – MALWARE ===
+  { q: "Which software is used to detect and remove viruses and malware?", opts: ["Disk Defragmenter", "Antivirus software", "Notepad", "Task Manager"], ans: 1, cat: "Software – Malware", expl: "Antivirus software scans for, detects, and removes malicious software from the computer." },
+  { q: "Signs that a computer may be infected with malware include:", opts: ["Faster performance", "Unexpected pop-ups and unexplained slowdowns", "Improved battery life", "Cleaner desktop"], ans: 1, cat: "Software – Malware", expl: "Malware commonly manifests as pop-up ads, sudden slowdowns, unknown programs, and unusual network activity." },
+  { q: "Before performing major troubleshooting steps, you should ALWAYS:", opts: ["Delete all programs", "Back up important data", "Disconnect the monitor", "Disable antivirus"], ans: 1, cat: "Software – Malware", expl: "Backing up data protects against accidental loss during complex troubleshooting procedures." },
+  { q: "A user downloads a file from an untrusted website and the PC becomes slow. The MOST likely cause is:", opts: ["Hardware failure", "Malware infection from the downloaded file", "Overheating", "Display driver issue"], ans: 1, cat: "Software – Malware", expl: "Files from untrusted sources frequently contain malware that silently consumes system resources." },
+  { q: "To check whether a downloaded file contains malware, you should:", opts: ["Open the file immediately", "Scan it with antivirus software before opening", "Delete the antivirus first", "Change the file extension"], ans: 1, cat: "Software – Malware", expl: "Running an antivirus scan before opening files from unknown sources protects against infection." },
+  { q: "Which of the following is NOT typically caused by malware?", opts: ["Unexpected pop-up ads", "Slow performance", "Monitor flickering", "Unauthorized data access"], ans: 2, cat: "Software – Malware", expl: "Monitor flickering is usually a hardware/driver issue. Malware causes software-level symptoms like pop-ups, slowdowns, and data breaches." },
+
+  // === CATEGORY: NETWORK & CONNECTIVITY ===
+  { q: "A user cannot access the internet. The FIRST step is:", opts: ["Reinstall Windows", "Check if the network cable or Wi-Fi is connected", "Replace the hard drive", "Update the BIOS"], ans: 1, cat: "Network & Connectivity", expl: "Physical connectivity (cable or wireless association) must be confirmed before investigating software or router issues." },
+  { q: "An internet connection is slow. What can cause this?", opts: ["Low hard disk space", "Router problems, ISP issues, or wireless interference", "Wrong screen resolution", "Outdated antivirus"], ans: 1, cat: "Network & Connectivity", expl: "Slow internet is commonly caused by router congestion, ISP throttling, or wireless interference from other devices." },
+  { q: "Restarting the router often resolves internet issues because:", opts: ["It reinstalls the OS", "It clears the router's memory and re-establishes the ISP connection", "It updates Windows drivers", "It repairs disk errors"], ans: 1, cat: "Network & Connectivity", expl: "Routers can experience memory issues or connection drops that a restart resolves by refreshing all connections." },
+  { q: "A computer can access local network resources but not the internet. The problem is MOST likely:", opts: ["Faulty RAM", "ISP or router WAN configuration issue", "Overheating GPU", "Bad monitor cable"], ans: 1, cat: "Network & Connectivity", expl: "Local access with no internet typically points to a WAN-side issue — the router cannot reach the ISP." },
+  { q: "Wireless signal interference can be caused by:", opts: ["Too many desktop icons", "Other wireless devices operating on the same frequency", "High screen brightness", "Large monitor size"], ans: 1, cat: "Network & Connectivity", expl: "Devices like microwaves, cordless phones, and neighboring Wi-Fi networks can interfere with wireless signals on the 2.4 GHz band." },
+  { q: "Which command can test basic network connectivity between two devices?", opts: ["sfc /scannow", "ping", "defrag", "format"], ans: 1, cat: "Network & Connectivity", expl: "The 'ping' command sends packets to a destination IP and reports whether they were received, testing basic connectivity." },
+  { q: "A user moves their laptop far from the router and the connection drops. The cause is:", opts: ["Overheating", "Weak wireless signal due to distance", "Corrupted OS", "Expired antivirus"], ans: 1, cat: "Network & Connectivity", expl: "Wi-Fi signal strength decreases with distance and obstacles, eventually becoming too weak to maintain a connection." },
+
+  // === CATEGORY: TROUBLESHOOTING PROCESS ===
+  { q: "What is the FIRST step in the standard troubleshooting process?", opts: ["Apply a solution", "Define or identify the problem", "Replace faulty components", "Run antivirus"], ans: 1, cat: "Troubleshooting Process", expl: "You must clearly define and understand the problem before attempting any fixes." },
+  { q: "The troubleshooting process of elimination means:", opts: ["Randomly applying solutions until one works", "Systematically testing and ruling out each potential cause one by one", "Replacing all hardware at once", "Reinstalling the OS immediately"], ans: 1, cat: "Troubleshooting Process", expl: "Process of elimination isolates the root cause by systematically ruling out possible causes until only the true cause remains." },
+  { q: "After identifying a problem and applying a fix, what is the NEXT step?", opts: ["Close the computer case immediately", "Test the system to verify the problem is resolved", "Delete all user files", "Update social media"], ans: 1, cat: "Troubleshooting Process", expl: "Verification ensures the fix actually worked and no new issues were introduced." },
+  { q: "Why should a technician write down each troubleshooting step taken?", opts: ["To impress the user", "To track progress, avoid repeating steps, and assist others who may help later", "To create a bill", "It is not necessary"], ans: 1, cat: "Troubleshooting Process", expl: "Documentation prevents repeated mistakes, supports collaboration, and provides a reference if the problem recurs." },
+  { q: "When should a technician seek professional or expert assistance?", opts: ["For every minor problem", "When all basic troubleshooting options have been exhausted", "Before doing any troubleshooting", "Only for hardware problems"], ans: 1, cat: "Troubleshooting Process", expl: "Expert help is appropriate when standard techniques fail, or when the problem requires specialized knowledge or tools." },
+  { q: "In troubleshooting, what does 'isolating the cause' mean?", opts: ["Turning off the computer", "Determining whether the issue is hardware or software, and narrowing down the component", "Formatting the drive", "Backing up files"], ans: 1, cat: "Troubleshooting Process", expl: "Isolation narrows the problem scope, preventing unnecessary repairs and saving time." },
+  { q: "A technician observes an error message on a PC. What should they do with it?", opts: ["Ignore it", "Write it down or photograph it for later research", "Immediately format the drive", "Replace the RAM"], ans: 1, cat: "Troubleshooting Process", expl: "Error messages contain valuable diagnostic information. Recording them allows for targeted online research and accurate diagnosis." },
+  { q: "Why is it recommended to start with simple checks before complex fixes?", opts: ["Simple fixes take longer", "Most problems have simple causes; complex fixes risk introducing new issues", "Complex fixes are cheaper", "Simple fixes never work"], ans: 1, cat: "Troubleshooting Process", expl: "The principle of Occam's Razor applies — the simplest explanation is usually correct. Checking simple things first saves time and effort." },
+  { q: "What is the purpose of documenting troubleshooting findings?", opts: ["To fill out paperwork", "To provide a reference for future similar problems and track solutions", "To slow down the process", "It has no purpose"], ans: 1, cat: "Troubleshooting Process", expl: "Documentation creates a knowledge base that helps resolve future similar issues faster." },
+  { q: "Which of the following BEST describes computer troubleshooting?", opts: ["Guessing randomly until something works", "A logical, systematic process of identifying and resolving computer problems", "Always replacing hardware first", "Only for trained IT professionals"], ans: 1, cat: "Troubleshooting Process", expl: "Troubleshooting is methodical — it follows a structured process of identification, isolation, and resolution." },
+
+  // === CATEGORY: DIAGNOSTIC TOOLS ===
+  { q: "On Windows, which keyboard shortcut opens Task Manager?", opts: ["Ctrl + Z", "Ctrl + Alt + Delete", "Alt + F4", "Ctrl + Shift + S"], ans: 1, cat: "Diagnostic Tools", expl: "Ctrl+Alt+Delete opens the Windows security screen from which Task Manager can be accessed, or you can use Ctrl+Shift+Esc directly." },
+  { q: "Antivirus software primarily functions by:", opts: ["Repairing corrupted hard sectors", "Detecting and removing malicious software", "Optimizing disk performance", "Managing network connections"], ans: 1, cat: "Diagnostic Tools", expl: "Antivirus software identifies, quarantines, and removes malware including viruses, spyware, and ransomware." },
+  { q: "Which Windows tool scans and fixes corrupted Windows system files when run from the command line?", opts: ["chkdsk", "sfc /scannow", "ping", "ipconfig"], ans: 1, cat: "Diagnostic Tools", expl: "sfc /scannow (System File Checker) scans all protected system files and replaces corrupted ones with correct versions." },
+  { q: "The 'chkdsk' command in Windows is used to:", opts: ["Check network speed", "Check and repair errors on the hard disk", "Check for viruses", "Check RAM usage"], ans: 1, cat: "Diagnostic Tools", expl: "chkdsk (Check Disk) scans the file system and disk sectors for errors and can attempt to repair them." },
+  { q: "What does the Windows Event Viewer display?", opts: ["Network traffic data", "System, application, and security log entries and error messages", "GPU usage graphs", "Disk defragmentation progress"], ans: 1, cat: "Diagnostic Tools", expl: "Event Viewer logs system events, warnings, and errors that can be analyzed to diagnose problems." },
+  { q: "A USB bootable drive is primarily used for:", opts: ["Charging devices faster", "Booting a computer to install or repair an operating system", "Increasing internet speed", "Storing music"], ans: 1, cat: "Diagnostic Tools", expl: "A USB boot drive can start a computer independently of its internal OS, enabling reinstallation or system repair." },
+  { q: "Which Windows tool helps remove temporary files and reclaim disk space?", opts: ["Paint", "Disk Cleanup", "Notepad", "Snipping Tool"], ans: 1, cat: "Diagnostic Tools", expl: "Disk Cleanup identifies and deletes temp files, recycle bin contents, and other unneeded files." },
+  { q: "A technician uses an eraser on RAM modules. What is the purpose?", opts: ["To create friction and generate heat", "To clean the gold contact pins for better electrical connection", "To erase data stored on RAM", "To remove the RAM label"], ans: 1, cat: "Diagnostic Tools", expl: "Oxide buildup on RAM contacts can cause poor connection. Gently erasing the gold pins cleans them and restores proper contact." },
+  { q: "What is a key advantage of booting into Safe Mode during troubleshooting?", opts: ["It loads faster internet", "It isolates third-party software/driver issues by loading only essential components", "It automatically fixes all problems", "It backs up your files"], ans: 1, cat: "Diagnostic Tools", expl: "If the system works in Safe Mode but not normal mode, the problem is likely a third-party driver or application." },
+  { q: "Which command-line tool displays the computer's IP address and network configuration?", opts: ["sfc", "ipconfig", "chkdsk", "ping"], ans: 1, cat: "Diagnostic Tools", expl: "ipconfig displays the current IP address, subnet mask, and default gateway — essential for network troubleshooting." },
+
+  // === MORE MIXED QUESTIONS ===
+  { q: "What is the meaning of 'POST' in computer troubleshooting?", opts: ["Power Over System Test", "Power-On Self-Test", "Program Output Screen Test", "Peripheral Output System Transfer"], ans: 1, cat: "Hardware – Power", expl: "POST (Power-On Self-Test) is a diagnostic process run by the BIOS when the computer first powers on to check hardware." },
+  { q: "A computer emits a series of beeps during startup instead of booting. This is called:", opts: ["Fan noise", "POST beep codes indicating a hardware error", "Normal operation", "Virus activity"], ans: 1, cat: "Hardware – Power", expl: "Beep codes are audio signals generated by the BIOS POST routine to communicate specific hardware errors." },
+  { q: "A 'SELECT BOOT DEVICE' message at startup usually indicates:", opts: ["Monitor is off", "Hard disk disconnected or failed", "GPU driver error", "RAM is full"], ans: 1, cat: "Hardware – Peripherals", expl: "This message means the BIOS cannot find a bootable device — the hard disk may be disconnected, failed, or misconfigured." },
+  { q: "After installing new RAM, the computer does not boot. The MOST likely cause is:", opts: ["Virus infection", "RAM not fully seated in the slot", "Outdated antivirus", "Corrupted browser"], ans: 1, cat: "Hardware – Peripherals", expl: "RAM must be firmly pushed into its slot until the retention clips snap. Improper seating prevents booting." },
+  { q: "Which of the following is the CORRECT first action when experiencing a frozen computer?", opts: ["Pull the power plug immediately", "Try Ctrl+Alt+Delete first, then hold the power button as a last resort", "Replace the hard drive", "Buy a new computer"], ans: 1, cat: "Software – Errors", expl: "Attempting a graceful close via Task Manager is preferred. Forced power-off (holding the button) risks data corruption and is a last resort." },
+  { q: "What information can a technician obtain from observing POST error messages or beep codes?", opts: ["Internet speed", "Which specific hardware component has failed", "Current date and time", "User's password"], ans: 1, cat: "Hardware – Power", expl: "BIOS beep codes and error messages correspond to specific hardware components (RAM, GPU, CPU) that failed the POST check." },
+  { q: "A technician should back up data BEFORE major troubleshooting because:", opts: ["Backups slow the system", "Troubleshooting steps could cause data loss if something goes wrong", "It is not necessary", "Data backup fixes all problems"], ans: 1, cat: "Troubleshooting Process", expl: "Complex fixes such as OS reinstallation or disk formatting can erase data. A backup ensures recovery is possible." },
+  { q: "Which component stores the operating system and all user data?", opts: ["RAM", "Hard Disk Drive (HDD) or Solid State Drive (SSD)", "CPU", "GPU"], ans: 1, cat: "Hardware – Peripherals", expl: "The HDD or SSD provides non-volatile storage for the OS, applications, and all user files." },
+  { q: "RAM (Random Access Memory) is used for:", opts: ["Permanent data storage", "Temporarily holding active programs and data the CPU is currently using", "Storing the OS permanently", "Internet connectivity"], ans: 1, cat: "Hardware – Peripherals", expl: "RAM is volatile, fast working memory. It holds currently running processes. Data is lost when power is removed." },
+  { q: "Which of the following is a SOFTWARE troubleshooting tool?", opts: ["Screwdriver", "Multimeter", "Task Manager", "Replacement cable"], ans: 2, cat: "Diagnostic Tools", expl: "Task Manager is a built-in Windows software tool. Screwdrivers, multimeters, and cables are hardware tools." },
+  { q: "A computer boots but the operating system fails to load repeatedly. The MOST likely cause is:", opts: ["Monitor failure", "Corrupted OS or failed hard disk", "Keyboard not connected", "Outdated antivirus"], ans: 1, cat: "Software – Errors", expl: "Repeated OS loading failures typically point to corrupted system files or physical hard drive failure." },
+  { q: "Which of the following actions can PREVENT many computer problems?", opts: ["Running the computer 24/7 without restart", "Regularly updating drivers and operating system software", "Avoiding antivirus software", "Disabling all notifications"], ans: 1, cat: "Troubleshooting Process", expl: "Updates patch security vulnerabilities, fix bugs, and improve hardware compatibility, preventing many common problems." },
+  { q: "A user cannot log into Windows with their correct password. A quick check should be:", opts: ["Reinstall Windows", "Check if Caps Lock is accidentally on", "Replace the keyboard", "Run sfc /scannow"], ans: 1, cat: "Software – Errors", expl: "Caps Lock changes letter case and is a very common accidental cause of login failures." },
+  { q: "Which of the following is an example of hardware fault isolation?", opts: ["Running antivirus software", "Testing a suspect RAM module in another PC", "Reinstalling drivers", "Changing the wallpaper"], ans: 1, cat: "Troubleshooting Process", expl: "Testing a component in a known-working machine confirms whether the component itself is faulty." },
+  { q: "A printer shows an error and won't print. After checking the connection, what else should be checked?", opts: ["The monitor brightness", "Whether there is a paper jam and ink cartridge status", "The GPU drivers", "The RAM"], ans: 1, cat: "Hardware – Peripherals", expl: "Paper jams and empty/improperly seated ink cartridges are the two most common printer hardware causes of print failure." },
+  { q: "What does 'formatting' a hard drive do?", opts: ["Speeds up the CPU", "Erases all data and prepares the drive for fresh use", "Defragments files", "Updates the OS"], ans: 1, cat: "Diagnostic Tools", expl: "Formatting completely wipes a drive and sets up a new file system. It is a drastic step that destroys all existing data." },
+  { q: "An internet browser opens very slowly and crashes often. The FIRST step is:", opts: ["Replace the PC", "Clear browser cache and disable extensions", "Replace the GPU", "Reinstall Windows"], ans: 1, cat: "Software – Performance", expl: "Browser cache and extensions can conflict or become bloated, causing slowdowns and crashes. Clearing them is a simple first fix." },
+  { q: "Which of the following is MOST important before opening a PC for hardware inspection?", opts: ["Create a desktop shortcut", "Power off and unplug the computer from the mains", "Maximize all windows", "Update Windows first"], ans: 1, cat: "Hardware – Peripherals", expl: "Electrical safety is paramount — always power off and unplug before opening a computer case." },
+  { q: "A graphics card driver conflict can cause:", opts: ["Keyboard input lag", "Screen flickering, display artifacts, or crashes", "Slow internet", "Printer errors"], ans: 1, cat: "Hardware – Display", expl: "GPU driver conflicts directly affect visual output, manifesting as flickering, artifacts, or BSODs with display-related error codes." },
+  { q: "What does 'driver' software do?", opts: ["Stores personal files", "Allows the OS to communicate with hardware devices", "Runs antivirus scans", "Manages internet connection"], ans: 1, cat: "Diagnostic Tools", expl: "Drivers act as translators between the OS and hardware, enabling them to communicate and function correctly together." },
+
+  // Extra bank to exceed 200
+  { q: "A computer screen displays colors incorrectly (e.g., everything looks red-tinted). This is MOST likely:", opts: ["Virus infection", "Damaged display cable or faulty monitor", "Low battery", "Keyboard driver issue"], ans: 1, cat: "Hardware – Display", expl: "Color distortions are usually caused by damaged cables (losing one color channel) or a failing monitor backlight/panel." },
+  { q: "Which of the following is the safest way to shut down a frozen Windows PC?", opts: ["Unplug it immediately", "Hold the power button for 5–10 seconds, then restart", "Remove the hard drive", "Spray compressed air on the CPU"], ans: 1, cat: "Software – Errors", expl: "Holding the power button forces a hardware shutdown. While not ideal, it is safer than pulling the plug and preserves drive integrity better." },
+  { q: "What does 'virtual memory' refer to?", opts: ["Internet cloud storage", "Hard disk space used as an extension of RAM", "GPU memory", "Network memory"], ans: 1, cat: "Software – Performance", expl: "Virtual memory uses a portion of the hard disk (page file) as temporary RAM when physical RAM is full." },
+  { q: "When should you replace a hard drive instead of repairing it?", opts: ["After one bad file", "When it shows physical damage, repeated bad sectors, or clicking sounds", "After 1 year of use", "When internet is slow"], ans: 1, cat: "Hardware – Peripherals", expl: "Physical damage and mechanical failure (clicking sounds, repeated bad sectors) are signs a hard drive is unrecoverable and must be replaced." },
+  { q: "A computer's clock time keeps resetting after every shutdown. This indicates:", opts: ["Malware infection", "Dead CMOS battery on the motherboard", "Monitor malfunction", "Hard drive failure"], ans: 1, cat: "Hardware – Peripherals", expl: "The CMOS battery powers the real-time clock and stores BIOS settings when the PC is off. A dead CMOS battery causes time/setting loss." },
+  { q: "In the troubleshooting process, 'gathering information' includes:", opts: ["Randomly deleting files", "Asking the user when the problem started and what changed recently", "Formatting the drive", "Ordering new parts immediately"], ans: 1, cat: "Troubleshooting Process", expl: "Understanding when and how the problem started, and recent changes, dramatically narrows down potential causes." },
+  { q: "Which of the following issues would a Disk Defragmenter NOT help with?", opts: ["Slow file read speeds on HDD", "Scattered file storage", "Virus infection", "File access delays"], ans: 2, cat: "Software – Performance", expl: "Defragmenter rearranges HDD file storage for efficiency. It does not scan for or remove viruses — that is antivirus software's job." },
+  { q: "Replacing thermal paste on a CPU is recommended when:", opts: ["The CPU fan is new", "Temperatures remain high after cleaning dust", "The hard drive fails", "The network slows down"], ans: 1, cat: "Hardware – Overheating", expl: "Old thermal paste dries out and loses conductivity over time, reducing heat transfer. Replacing it can significantly lower CPU temperatures." },
+  { q: "What type of electricity can destroy PC components even without visible sparks?", opts: ["Alternating current", "Electrostatic discharge (ESD)", "Battery current", "Solar energy"], ans: 1, cat: "Hardware – Peripherals", expl: "ESD from human skin can permanently damage sensitive electronic components even with a tiny, imperceptible discharge." },
+  { q: "A user gets the 'No bootable device found' error. Which component should be checked FIRST?", opts: ["Monitor", "Hard disk connection and health", "Antivirus status", "Screen resolution"], ans: 1, cat: "Hardware – Peripherals", expl: "This error means BIOS cannot find a bootable drive. Check whether the hard disk is detected, connected, and healthy." },
+  { q: "Which Windows tool allows you to manage programs that run automatically at startup?", opts: ["Notepad", "Task Manager (Startup tab)", "Paint", "Calculator"], ans: 1, cat: "Diagnostic Tools", expl: "The Startup tab in Task Manager lists and allows enabling/disabling programs that launch automatically when Windows starts." },
+  { q: "Keeping operating system and software up-to-date is important because:", opts: ["It makes the desktop look different", "Updates fix security vulnerabilities and known bugs", "It uses more internet data", "It slows down the computer"], ans: 1, cat: "Troubleshooting Process", expl: "Updates patch exploits and bugs. Running outdated software leaves systems vulnerable to attacks and instability." },
+  { q: "What is the purpose of a surge protector?", opts: ["To increase internet speed", "To protect equipment from voltage spikes in the power supply", "To cool the CPU", "To store data"], ans: 1, cat: "Hardware – Power", expl: "Surge protectors absorb or block voltage spikes (surges), preventing them from reaching and damaging connected electronics." },
+  { q: "A computer is very slow after connecting to a new Wi-Fi network. A possible cause is:", opts: ["The new Wi-Fi increased CPU usage", "Background malware using the internet connection", "The monitor is too bright", "The keyboard changed layout"], ans: 1, cat: "Network & Connectivity", expl: "Malware and certain background apps can consume bandwidth heavily, slowing both internet and general system performance." },
+  { q: "Printer paper jams can be prevented by:", opts: ["Using very thick paper in all trays", "Not overloading the paper tray and using the correct paper type", "Printing more frequently", "Increasing printer driver version"], ans: 1, cat: "Hardware – Peripherals", expl: "Overloading paper trays and using incorrect paper thickness are leading causes of paper jams." },
+  { q: "When a program gives an 'insufficient system resources' error, the MOST common fix is:", opts: ["Lower screen brightness", "Close other running applications to free up RAM and CPU", "Change the desktop background", "Remove antivirus"], ans: 1, cat: "Software – Performance", expl: "Freeing up RAM and CPU by closing other programs gives the target application the resources it needs." },
+  { q: "What should be done when a recently installed update causes system instability?", opts: ["Remove all updates permanently", "Uninstall only the problematic update or use System Restore", "Buy a new OS", "Ignore it"], ans: 1, cat: "Software – Errors", expl: "Windows allows individual updates to be uninstalled. System Restore can also revert to a pre-update state." },
+  { q: "A CD/DVD drive is not recognized by Windows. After checking the physical connection, the next step is:", opts: ["Replace the monitor", "Check and update device drivers for the drive", "Reinstall antivirus", "Defragment the hard drive"], ans: 1, cat: "Diagnostic Tools", expl: "Device drivers enable Windows to communicate with hardware. A missing or corrupt driver will cause hardware not to be detected." },
+  { q: "The most RELIABLE source for troubleshooting a specific error message is:", opts: ["Social media opinions", "Official documentation, forums, and verified knowledge bases", "Television", "Guessing based on symptoms"], ans: 1, cat: "Troubleshooting Process", expl: "Official documentation and reputable technical forums provide verified, accurate solutions to specific error messages." },
+  { q: "After a hardware repair, the technician should:", opts: ["Leave the case open permanently", "Reassemble the system, power it on, and verify normal operation", "Format the hard drive", "Delete all software"], ans: 1, cat: "Troubleshooting Process", expl: "Verification after repair confirms the fix was successful and no additional issues were introduced during the repair." },
+  { q: "A user reports the computer makes noise but the sound from speakers is absent. The first check is:", opts: ["Reinstall Windows", "Volume level and audio output settings", "Format the hard drive", "Replace the GPU"], ans: 1, cat: "Software – Errors", expl: "Muted volume or incorrect audio output device selected is a very common and easily fixed cause of no sound." },
+  { q: "When is it appropriate to reinstall the operating system?", opts: ["As the very first troubleshooting step", "As a last resort when other fixes fail to resolve persistent OS-level issues", "When internet is slow", "When the monitor flickers"], ans: 1, cat: "Software – Errors", expl: "OS reinstallation destroys user configurations and can affect data. It is reserved for cases where all other methods fail." },
+  { q: "Which of the following best describes 'hardware fault'?", opts: ["An error in a software program's code", "A malfunction or failure in a physical computer component", "A virus infection", "A corrupted operating system file"], ans: 1, cat: "Hardware – Peripherals", expl: "Hardware faults are physical failures — broken circuits, damaged connectors, worn-out components, etc." },
+  { q: "A user spills liquid on a keyboard. What should be done FIRST?", opts: ["Continue using it and hope it works", "Power off the computer immediately and disconnect the keyboard", "Run antivirus", "Update keyboard drivers"], ans: 1, cat: "Hardware – Peripherals", expl: "Liquid can cause short circuits. Immediately disconnecting and powering off prevents electrical damage and potential fire risk." },
+  { q: "What is the purpose of the BIOS/UEFI in a computer?", opts: ["To run antivirus software", "To initialize hardware and launch the OS during startup", "To provide internet access", "To manage USB devices only"], ans: 1, cat: "Hardware – Power", expl: "BIOS/UEFI performs POST, initializes hardware, and hands control to the OS bootloader during the startup process." },
+  { q: "A hard disk makes a 'click of death' sound. This means:", opts: ["Disk is working perfectly", "The disk's read/write head is failing — immediate backup required", "The disk is defragmenting", "Windows Update is running"], ans: 1, cat: "Hardware – Peripherals", expl: "The 'click of death' indicates the read/write head is failing to find its home position — a sign of imminent drive failure." },
+  { q: "Which of the following is the BEST practice when working inside a PC case?", opts: ["Keep the PC plugged in for better light", "Unplug from power and use an anti-static wrist strap", "Work quickly without caution", "Leave all cables connected"], ans: 1, cat: "Hardware – Peripherals", expl: "Anti-static straps ground the technician, preventing ESD damage. Power must be disconnected for safety." },
+  { q: "Why might a USB device work on one computer but not another?", opts: ["The device is broken", "The other computer may have outdated USB drivers or incompatible OS", "The USB port has water in it", "Different wallpapers"], ans: 1, cat: "Diagnostic Tools", expl: "Driver incompatibility or OS-specific issues can prevent a device from functioning on one system while working fine on another." },
+  { q: "What is the primary purpose of an Uninterruptible Power Supply (UPS)?", opts: ["To increase internet speed", "To provide backup power during outages and protect against surges", "To cool the computer", "To store files"], ans: 1, cat: "Hardware – Power", expl: "A UPS gives time to save work and safely shut down during power failures, and also conditions the power supply against spikes." },
+  { q: "Screen resolution problems are MOST commonly fixed by:", opts: ["Cleaning the monitor screen", "Updating or reinstalling the graphics driver and adjusting display settings", "Replacing the RAM", "Scanning for viruses"], ans: 1, cat: "Hardware – Display", expl: "Resolution and display settings depend on the graphics driver. Outdated or corrupt drivers cause resolution and display issues." },
+  { q: "A computer shows correct display on boot but goes black shortly after. Probable cause:", opts: ["Hard drive failure", "Screensaver or power management turning off the display", "CPU overheating", "Network failure"], ans: 1, cat: "Hardware – Display", expl: "Power settings can turn off the monitor after inactivity. Moving the mouse or pressing a key should wake it." },
+  { q: "What is the main difference between HDD and SSD?", opts: ["HDDs are faster; SSDs are slower", "SSDs use flash memory with no moving parts; HDDs use spinning magnetic platters", "HDDs are smaller in size", "SSDs cannot store as much data as HDDs"], ans: 1, cat: "Hardware – Peripherals", expl: "SSDs use solid-state flash memory, making them faster and more shock-resistant. HDDs use mechanical spinning platters." },
+  { q: "A technician suspects overheating. Which component should they check FIRST?", opts: ["Power cable", "Cooling fan operation and dust accumulation", "Monitor cable", "Keyboard driver"], ans: 1, cat: "Hardware – Overheating", expl: "Fan failure and dust buildup are the most direct causes of overheating. Checking these first is logical and efficient." },
+  { q: "The 'Last Known Good Configuration' in Windows startup options restores:", opts: ["The newest installed drivers", "Windows settings from the last successful boot", "User's deleted files", "All Windows updates"], ans: 1, cat: "Software – Errors", expl: "Last Known Good Configuration loads the registry hive and drivers from the last successful Windows login, bypassing recent problematic changes." },
+  { q: "A computer randomly restarts without warning. Which of the following is a possible cause?", opts: ["Mouse is wireless", "Hardware failure, overheating, or driver crash", "Incorrect time zone", "Wrong wallpaper"], ans: 1, cat: "Hardware – Overheating", expl: "Random restarts are caused by thermal shutdown (overheating), RAM failures, PSU instability, or driver-induced BSODs." },
+  { q: "Which statement about troubleshooting is TRUE?", opts: ["You should always replace hardware first", "Troubleshooting is always a process of trial and error requiring patience", "Troubleshooting requires no documentation", "Only IT professionals can troubleshoot computers"], ans: 1, cat: "Troubleshooting Process", expl: "Troubleshooting involves systematic trial and error. Even experts face problems that require multiple attempts to resolve." },
+  { q: "What does 'End Task' in Task Manager do?", opts: ["Shuts down Windows", "Force-closes the selected unresponsive program", "Deletes a program permanently", "Restarts the computer"], ans: 1, cat: "Diagnostic Tools", expl: "End Task terminates the selected process, freeing up its resources without restarting the whole system." },
+  { q: "Which action can reduce computer startup time?", opts: ["Enable more startup programs", "Disable unnecessary startup programs via Task Manager", "Increase screen brightness", "Add more desktops"], ans: 1, cat: "Software – Performance", expl: "Startup programs extend boot time. Disabling ones you don't need immediately reduces startup duration significantly." },
+  { q: "A user reports their laptop battery drains very fast. A likely cause is:", opts: ["Wrong keyboard layout", "Background apps consuming power, or battery aging/failure", "High screen resolution", "Outdated antivirus"], ans: 1, cat: "Hardware – Power", expl: "Background processes drain battery unnecessarily. Aging lithium batteries also lose capacity over charge cycles." },
+  { q: "Which is the CORRECT order of the basic troubleshooting procedure?", opts: [
+    "Fix → Identify → Test → Document",
+    "Identify → Hypothesize → Test → Fix → Verify → Document",
+    "Replace → Test → Document → Identify",
+    "Document → Replace → Fix → Test"
+  ], ans: 1, cat: "Troubleshooting Process", expl: "The standard procedure is: Identify the problem → Develop hypotheses → Test → Implement fix → Verify → Document." },
+  { q: "An email client cannot connect to the email server. After checking the password, what should be verified next?", opts: ["Hard drive space", "Correct incoming/outgoing server settings and port numbers", "GPU driver version", "Screen resolution"], ans: 1, cat: "Network & Connectivity", expl: "Email client failures often stem from incorrect server addresses, ports, or SSL/TLS settings, not passwords alone." },
+  { q: "Which component failing would cause NO audio output from a desktop PC?", opts: ["Graphics card", "Sound card or audio chipset", "Hard drive", "Power supply"], ans: 1, cat: "Hardware – Peripherals", expl: "Audio output is handled by the sound card (or integrated audio chipset on the motherboard). Its failure results in no sound." },
+  { q: "A computer runs fine but shuts down after exactly 30 minutes every day. This pattern suggests:", opts: ["Random hardware failure", "A scheduled task or thermal shutdown triggered by temperature", "Virus infection", "Hard disk failure"], ans: 1, cat: "Hardware – Overheating", expl: "A consistent time-pattern shutdown suggests either a scheduled OS task or thermal shutdown triggered once components reach a set temperature." },
+  { q: "The 'ping' command returns 'Request Timed Out'. This means:", opts: ["The computer has a virus", "The destination is not reachable or is blocking ICMP packets", "The hard disk is full", "The monitor is off"], ans: 1, cat: "Network & Connectivity", expl: "A timed-out ping indicates the destination host cannot be reached or is configured to block ping (ICMP) requests." },
+  { q: "Which of the following should a technician check when a USB device is not recognized?", opts: ["Monitor brightness", "A different USB port, device manager, and driver updates", "BIOS date", "Desktop icon count"], ans: 1, cat: "Diagnostic Tools", expl: "Trying another port rules out a faulty port. Device Manager shows driver errors. Updating drivers resolves recognition issues." },
+  { q: "Installing too many browser extensions can cause:", opts: ["Hard drive failure", "Browser to slow down, freeze, or crash", "Monitor flicker", "Keyboard to stop working"], ans: 1, cat: "Software – Performance", expl: "Each extension consumes browser memory and processing resources. Many extensions competing can severely degrade browser performance." },
+  { q: "What is 'fragmentation' of a hard disk?", opts: ["Physical cracks in the disk platter", "Files broken into scattered pieces across the disk, slowing read/write speeds", "Disk encryption", "A type of malware"], ans: 1, cat: "Software – Performance", expl: "As files are created, modified, and deleted, data gets scattered across the disk. Reading these fragments takes extra time." },
+  { q: "Which of the following best represents 'preventive maintenance' for a computer?", opts: ["Waiting until it breaks", "Regularly cleaning dust, updating software, and running diagnostics proactively", "Replacing the PC yearly", "Formatting every month"], ans: 1, cat: "Troubleshooting Process", expl: "Preventive maintenance keeps systems healthy before problems occur — extending lifespan and reducing downtime." },
+
+  // 10 more to ensure 200+ total
+  { q: "A laptop's touchpad stops working. After rebooting, it still doesn't work. What should you check?", opts: ["Monitor resolution", "Whether a function key combination has disabled the touchpad", "GPU driver", "Hard disk space"], ans: 1, cat: "Hardware – Peripherals", expl: "Most laptops have an Fn+F-key shortcut to disable/enable the touchpad. Accidentally pressing it disables it." },
+  { q: "What does the 'ipconfig /release' command do on Windows?", opts: ["Frees up disk space", "Releases the current IP address from the network adapter", "Releases a software license", "Restores IP configuration"], ans: 1, cat: "Network & Connectivity", expl: "'ipconfig /release' tells Windows to release its current DHCP-assigned IP address, useful for network troubleshooting." },
+  { q: "A hard disk error 'bad sector' means:", opts: ["A sector of the disk is extremely fast", "A physical or logical area of the disk cannot reliably store data", "A sector has been cleaned", "A sector is encrypted"], ans: 1, cat: "Hardware – Peripherals", expl: "Bad sectors are areas of the disk where data cannot be reliably written or read, due to physical damage or magnetic degradation." },
+  { q: "What is the purpose of 'reformatting' a hard drive as a troubleshooting step?", opts: ["To speed up internet", "To erase all data and start fresh with a clean OS installation", "To update drivers", "To defragment the disk"], ans: 1, cat: "Diagnostic Tools", expl: "Reformatting is a drastic, last-resort action that wipes the drive and allows a fresh OS install, resolving deep software corruption." },
+  { q: "A computer displays 'Operating System Not Found'. A possible cause is:", opts: ["Too many browser tabs", "Boot order in BIOS set incorrectly or hard disk failed", "Monitor is off", "Antivirus disabled"], ans: 1, cat: "Software – Errors", expl: "This error occurs when BIOS cannot find the OS. Either the boot order is wrong (e.g., booting a USB before HDD) or the HDD has failed." },
+  { q: "Which action helps confirm a RAM module is faulty?", opts: ["Run antivirus", "Test the RAM in another system or use a RAM diagnostic tool (e.g., Memtest86)", "Defragment the disk", "Update the network driver"], ans: 1, cat: "Hardware – Peripherals", expl: "Memtest86 runs memory tests to identify errors in RAM modules. Testing in another system also isolates whether RAM or slot is faulty." },
+  { q: "Windows Update is important for security because:", opts: ["It changes the wallpaper", "It patches known security vulnerabilities that hackers could exploit", "It increases RAM", "It defragments the disk"], ans: 1, cat: "Software – Malware", expl: "Security patches in Windows Update close known vulnerabilities. Unpatched systems are prime targets for malware and attacks." },
+  { q: "A user accidentally deleted an important file. What should they check first?", opts: ["Antivirus quarantine", "The Recycle Bin", "Task Manager", "Device Manager"], ans: 1, cat: "Software – Errors", expl: "Deleted files go to the Recycle Bin first (unless permanently deleted with Shift+Delete). It's always the first place to check." },
+  { q: "Which of the following can cause intermittent network connection drops?", opts: ["Desktop wallpaper", "Loose network cable or unstable wireless signal", "Low printer ink", "GPU overheating"], ans: 1, cat: "Network & Connectivity", expl: "A partially connected cable or weak/fluctuating wireless signal causes intermittent drops as the connection cuts in and out." },
+  { q: "Why is it important to test one change at a time during troubleshooting?", opts: ["To waste time", "To clearly identify which change fixed or worsened the problem", "Because computers only accept one change", "To avoid learning"], ans: 1, cat: "Troubleshooting Process", expl: "Making multiple changes simultaneously makes it impossible to know which fix worked or which caused a new problem." },
+];
+
+// =====================
+// EXAM STATE
+// =====================
+let session = [];
+let answers = [];
+let currentIndex = 0;
+let timerInterval = null;
+let timeLeft = 12.55 * 60;
+let submitted = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startExam() {
+  // 1. Get 60 random questions
+  let selectedQuestions = shuffle(ALL_QUESTIONS).slice(0, 60);
+
+  // 2. Clone them and dynamically shuffle their options
+  session = selectedQuestions.map(q => {
+    // Make a deep copy so we don't accidentally mutate ALL_QUESTIONS permanently
+    let newQ = JSON.parse(JSON.stringify(q));
+    
+    // Save the actual text string of the correct answer before we scramble it
+    let correctText = newQ.opts[newQ.ans];
+
+    // Shuffle the options array using Fisher-Yates
+    for (let i = newQ.opts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newQ.opts[i], newQ.opts[j]] = [newQ.opts[j], newQ.opts[i]];
+    }
+
+    // Update the answer index to where the correct option landed
+    newQ.ans = newQ.opts.indexOf(correctText);
+    
+    return newQ;
+  });
+
+  answers = new Array(60).fill(null);
+  currentIndex = 0;
+  submitted = false;
+  timeLeft = 12.5 * 60;
+
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('exam').style.display = 'block';
+
+  renderQuestion();
+  buildDots();
+  startTimer();
+}
+
+function renderQuestion() {
+  const q = session[currentIndex];
+  const answered = answers[currentIndex];
+  const total = 60;
+
+  document.getElementById('qCurrent').textContent = currentIndex + 1;
+  document.getElementById('qTotal').textContent = total;
+  document.getElementById('progressFill').style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+  document.getElementById('qNumTag').innerHTML =
+    `Question ${currentIndex + 1} of ${total} <span class="q-category-tag">${q.cat}</span>`;
+
+  document.getElementById('qText').textContent = q.q;
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    if (answered === i) btn.classList.add('selected');
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('btnPrev').disabled = currentIndex === 0;
+  document.getElementById('btnNext').disabled = currentIndex === total - 1;
+
+  // Explanation box (only shown if submitted)
+  const explBox = document.getElementById('explBox');
+  if (submitted) {
+    explBox.style.display = 'block';
+    explBox.textContent = '💡 ' + q.expl;
+    disableOptions();
+  } else {
+    explBox.style.display = 'none';
+  }
+
+  // Refresh card animation
+  const card = document.getElementById('qCard');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'slideIn 0.35s ease';
+
+  updateDots();
+}
+
+function selectAnswer(i) {
+  if (submitted) return;
+  answers[currentIndex] = i;
+  renderQuestion();
+}
+
+function navigate(dir) {
+  currentIndex += dir;
+  renderQuestion();
+}
+
+function buildDots() {
+  const wrap = document.getElementById('dotsWrap');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.title = `Q${i + 1}`;
+    d.onclick = () => { currentIndex = i; renderQuestion(); };
+    wrap.appendChild(d);
+  }
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((d, i) => {
+    d.className = 'dot';
+    if (answers[i] !== null) d.classList.add('answered');
+    if (i === currentIndex) d.classList.add('current');
+  });
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById('timerDisplay').textContent =
+      `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+    if (timeLeft <= 300) {
+      document.querySelector('.timer-badge').style.background = 'rgba(239,68,68,0.2)';
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitExam();
+    }
+  }, 1000);
+}
+
+function openSubmitModal() {
+  const cnt = answers.filter(a => a !== null).length;
+  document.getElementById('answeredCount').textContent = cnt;
+  document.getElementById('submitModal').classList.add('open');
+}
+
+function closeSubmitModal() {
+  document.getElementById('submitModal').classList.remove('open');
+}
+
+function submitExam() {
+  clearInterval(timerInterval);
+  submitted = true;
+  closeSubmitModal();
+  showResults();
+}
+
+function showResults() {
+  document.getElementById('exam').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  window.scrollTo(0, 0);
+
+  let correct = 0, wrong = 0, skipped = 0;
+  const wrongQs = [];
+
+  session.forEach((q, i) => {
+    const a = answers[i];
+    if (a === null) {
+      skipped++;
+    } else if (a === q.ans) {
+      correct++;
+    } else {
+      wrong++;
+      wrongQs.push({ q, userAns: a, idx: i });
+    }
+  });
+
+  const pct = Math.round((correct / 60) * 100);
+
+  document.getElementById('rsCorrect').textContent = correct;
+  document.getElementById('rsWrong').textContent = wrong;
+  document.getElementById('rsSkipped').textContent = skipped;
+  document.getElementById('scorePct').textContent = pct + '%';
+  document.getElementById('wrongCountBadge').textContent = wrong + skipped;
+
+  // Animate ring
+  setTimeout(() => {
+    const circumference = 427;
+    const offset = circumference - (circumference * pct / 100);
+    document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+  }, 300);
+
+  // Result message
+  let emoji, title, sub;
+  if (pct >= 90) { emoji = '🏆'; title = 'Outstanding!'; sub = 'Excellent mastery of computer troubleshooting.'; }
+  else if (pct >= 75) { emoji = '🎉'; title = 'Well Done!'; sub = 'Good understanding with room to improve.'; }
+  else if (pct >= 60) { emoji = '📘'; title = 'Keep Learning'; sub = 'Solid foundation — review the missed topics.'; }
+  else if (pct >= 50) { emoji = '💪'; title = 'Keep Practicing'; sub = 'Review the fundamentals and try again.'; }
+  else { emoji = '📚'; title = 'Study More'; sub = 'Focus on the review section below and retake.'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub + ` Score: ${correct}/60 (${pct}%)`;
+
+  // Build review cards
+  const container = document.getElementById('reviewCards');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  wrongQs.forEach(({ q, userAns, idx }) => {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+
+    const skippedQ = userAns === null;
+
+    card.innerHTML = `
+      <div class="rc-meta">
+        <span class="rc-qnum">Question ${idx + 1}</span>
+        <span class="rc-cat">${q.cat}</span>
+      </div>
+      <div class="rc-q">${q.q}</div>
+      <div class="rc-answers">
+        ${skippedQ ? `<div class="rc-ans skipped-label"><span class="rc-ans-icon">⏭</span> You skipped this question</div>` :
+        `<div class="rc-ans your-wrong"><span class="rc-ans-icon">✗</span> Your answer: ${letters[userAns]}. ${q.opts[userAns]}</div>`}
+        <div class="rc-ans correct"><span class="rc-ans-icon">✓</span> Correct: ${letters[q.ans]}. ${q.opts[q.ans]}</div>
+      </div>
+      <div class="rc-expl">💡 ${q.expl}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  if (wrongQs.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:16px;">🎯 Perfect score! No questions to review.</p>';
+    document.querySelector('.review-title').style.display = 'none';
+  }
+}
+
+function retakeExam() {
+  document.getElementById('results').style.display = 'none';
+  startExam();
+}
+
+function disableOptions() {
+  const q = session[currentIndex];
+  const userAns = answers[currentIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    btn.classList.remove('selected');
+    if (i === q.ans) btn.classList.add('correct-ans');
+    else if (i === userAns && userAns !== q.ans) btn.classList.add('wrong-ans');
+  });
+}
+
+// =====================
+// KEYBOARD NAVIGATION
+// =====================
+document.addEventListener('keydown', (e) => {
+  const examContainer = document.getElementById('exam');
+  const modal = document.getElementById('submitModal');
+  
+  // Make sure we are actually on the exam screen and the submit modal isn't open
+  if (examContainer.style.display === 'block' && !modal.classList.contains('open') && !submitted) {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent accidental form submission or page scrolling
+      
+      if (currentIndex < 59) { // 59 is the index of the last (60th) question
+        navigate(1); // Go to next question
+      } else {
+        openSubmitModal(); // If on the last question, open the submit popup
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
